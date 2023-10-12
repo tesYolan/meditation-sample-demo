@@ -11,7 +11,7 @@
 # 
 
 import gradio as gr
-from request_handler import make_affirmation_request, make_audio_beat_request, make_tts_audio_request
+from request_handler import make_affirmation_request, make_audio_beat_request, make_tts_audio_request, make_txt_to_img_request
 
 def generate_affirmation(text):
 
@@ -30,6 +30,11 @@ def generate_tts_fn(text, dropdown):
 
     return response
 
+def txt_to_img(text):
+    response = make_txt_to_img_request(text)
+
+    return gr.Image(response)
+
 with gr.Blocks(theme="gradio/monochrome") as demo:
     # later on i want it to look like a mobile app with entire application centred. 
     gr.Markdown('<h1 style="text-align: center;">Self Affirmation App: An Illustration of AI in Product Design</h1>')
@@ -40,7 +45,7 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
             generate = gr.Button("Create a Self Affirmation Message", label="Create Self Affirmation Message")
 
-            generate_zh = gr.Button("Create a Self Affirmation Message- Chinese", label="Create Self Affirmation Message - Chinese")
+            # generate_zh = gr.Button("Create a Self Affirmation Message- Chinese", label="Create Self Affirmation Message - Chinese")
 
             text_gen = gr.Textbox(label="Generated Text", lines=1, placeholder="I am a good person. I am good mannered.", interactive=False)
             dropdown = gr.Dropdown(label="Speaker style", choices=["p336", "p339", "p326"])
@@ -50,9 +55,6 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             audio_gr = gr.Audio(label="Generated Audio")
             generate_tts = gr.Button("Generate TTS Audio", label="Generate TTS Audio")
             generate_tts.click(fn=generate_tts_fn, inputs=[text_gen, dropdown], outputs=[audio_gr])
-
-
-
 
             # drop down with five options. 
             # tts_style = gr.Dropdown(label="Audio style", choices=["Voice 1", "Voice 2"])
@@ -67,8 +69,12 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             image_generation = gr.Textbox(label="Image Generation", lines=1, placeholder="Serene image of a beach.")
             image_generation_button = gr.Button("Generate Image", label="Generate Image")
 
+            img_result = gr.Image()
 
-            combine_all = gr.Button("Combine All", label="Combine All")
+            image_generation_button.click(fn=txt_to_img, inputs=[image_generation], outputs=[img_result])
+
+
+            combine_all = gr.Button("Combine All - Not Implemented Yet", label="Combine All Not Implemented")
 
 
 
