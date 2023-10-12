@@ -51,7 +51,6 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             dropdown = gr.Dropdown(label="Speaker style", choices=["p336", "p339", "p326"])
             generate.click(fn=generate_affirmation, inputs=[text], outputs=[text_gen])
 
-
             audio_gr = gr.Audio(label="Generated Audio")
             generate_tts = gr.Button("Generate TTS Audio", label="Generate TTS Audio")
             generate_tts.click(fn=generate_tts_fn, inputs=[text_gen, dropdown], outputs=[audio_gr])
@@ -65,7 +64,6 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
             generate_audio.click(fn=generate_melody, inputs=[text_audio_style], outputs=[generated_video])
 
-
             image_generation = gr.Textbox(label="Image Generation", lines=1, placeholder="Serene image of a beach.")
             image_generation_button = gr.Button("Generate Image", label="Generate Image")
 
@@ -73,12 +71,8 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
             image_generation_button.click(fn=txt_to_img, inputs=[image_generation], outputs=[img_result])
 
-
             combine_all = gr.Button("Combine All - Not Implemented Yet", label="Combine All Not Implemented")
 
-
-
-
 if __name__ == "__main__":
-    demo.launch(server_port=8443, debug=True, server_name="0.0.0.0")            
+    demo.queue(concurrency_count=2, api_open=False).launch(server_port=8443, debug=False, share=True, server_name="0.0.0.0")            
 
