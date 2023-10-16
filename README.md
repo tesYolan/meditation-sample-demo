@@ -6,6 +6,7 @@ This is a wrapper around a couple of ML models that provide functionalities.
 * A MusicGen called from [Musicgen](https://github.com/camenduru/audiocraft/tree/v1.0) to generate the Audio. 
 * A TTS using [CoQUI](https://tts.readthedocs.io/en/latest/docker_images.html) to generate the Text to Audio model from the LLM output. 
 * A calling endpoint to stable-difussion-webui from Automatic1111 end point running locally. 
+* meditation is built via gradio
 
 ## TODO 
 - Need to implement a merger that combines all of them together. 
