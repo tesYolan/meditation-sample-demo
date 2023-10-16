@@ -74,5 +74,6 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             combine_all = gr.Button("Combine All - Not Implemented Yet", label="Combine All Not Implemented")
 
 if __name__ == "__main__":
-    demo.queue(concurrency_count=3, api_open=False).launch(server_port=8443, debug=True, share=True, server_name="0.0.0.0")            
+    print("Starting Gradio Server")
+    demo.queue(concurrency_count=3, api_open=False).launch(server_port=9000, debug=True, share=True, server_name="0.0.0.0")            
 
