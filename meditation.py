@@ -87,6 +87,7 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             combine_all.click(fn=generate_thumbnail, inputs=[audio_gr, generated_video, img_result], outputs=[merged_audio])
 
 if __name__ == "__main__":
-    demo.queue(concurrency_count=3, api_open=False).launch(server_port=8443, debug=True, share=True, server_name="0.0.0.0")            
+    print("Starting Gradio Server")
+    demo.queue(concurrency_count=3, api_open=False).launch(server_port=9000, debug=True, share=True, server_name="0.0.0.0")            
 
 

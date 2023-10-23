@@ -16,10 +16,10 @@ from PIL import Image
 import io
 from pydub import AudioSegment
 
-affirmation_gen = "http://100.76.16.85:6888/affirmation_gen"
-client = Client("http://100.76.16.85:6889/")
-tts_api = "http://100.76.16.85:5002/api/tts"
-txt_to_img = "http://100.76.16.85:7860/sdapi/v1/txt2img"
+affirmation_gen = "http://0.0.0.0:6888/affirmation_gen"
+client = Client("http://0.0.0.0:6889/")
+tts_api = "http://0.0.0.0:5002/api/tts"
+txt_to_img = "http://0.0.0.0:7860/sdapi/v1/txt2img"
 
 def resize_video(input_path, output_path, target_width, target_height):
     ffmpeg_cmd = [

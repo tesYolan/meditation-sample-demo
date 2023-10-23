@@ -1,0 +1,8 @@
+# Ignore PNG and WAV files
+*.png
+*.wav
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
