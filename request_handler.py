@@ -14,6 +14,7 @@ import wave
 import base64
 from PIL import Image
 import io
+from pydub import AudioSegment
 
 affirmation_gen = "http://100.76.16.85:6888/affirmation_gen"
 client = Client("http://100.76.16.85:6889/")
@@ -31,6 +32,40 @@ def resize_video(input_path, output_path, target_width, target_height):
     ]
     subprocess.run(ffmpeg_cmd)
 
+def extract_audio(input_file, output_file):
+    # this function would take the input file and extract the audio from it. 
+    command = ["ffmpeg", "-i", input_file, "-vn", "-acodec", "copy", output_file]
+    result = subprocess.run(command)
+    if result.returncode == 0:
+        return output_file
+    else:
+        print("Error in extracting")
+        return ''
+
+def generate_thumbnail(audio_gr, generated_video, img_result):
+    # this one we would take the image and the audio and the video and combine them into one.
+    # take the wav audio of the generated_video first
+    file_name = generate_random_string(12) + ".wav"
+    extract_audio(generated_video, file_name)
+
+    # now merge this audio and background audio. there is some package that does that. 
+
+    base_audio = AudioSegment.from_file(audio_gr) # this should be tts. 
+    background_audio = AudioSegment.from_file(file_name) # extracted audio
+
+    while len(background_audio) < len(base_audio):
+        background_audio += background_audio
+    
+    background_audio = background_audio[:len(base_audio)]
+
+    background_audio -= 10
+
+    output_audio = base_audio.overlay(background_audio)
+
+    output_file = generate_random_string(12) + ".wav"
+    output_audio.export(output_file, format="wav")
+
+    return output_file
 
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits

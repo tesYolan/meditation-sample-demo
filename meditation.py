@@ -11,7 +11,8 @@
 # 
 
 import gradio as gr
-from request_handler import make_affirmation_request, make_audio_beat_request, make_tts_audio_request, make_txt_to_img_request
+import subprocess
+from request_handler import make_affirmation_request, make_audio_beat_request, make_tts_audio_request, make_txt_to_img_request, generate_thumbnail
 
 def generate_affirmation(text):
 
@@ -34,6 +35,14 @@ def txt_to_img(text):
     response = make_txt_to_img_request(text)
 
     return gr.Image(response)
+
+def generate_thumbnail(audio_gr, generated_video, img_result):
+    response = generate_thumbnail(audio_gr, generated_video, img_result)
+
+    # currently returning the file name
+    return response
+
+
 
 with gr.Blocks(theme="gradio/monochrome") as demo:
     # later on i want it to look like a mobile app with entire application centred. 
@@ -71,8 +80,13 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
             image_generation_button.click(fn=txt_to_img, inputs=[image_generation], outputs=[img_result])
 
-            combine_all = gr.Button("Combine All - Not Implemented Yet", label="Combine All Not Implemented")
+            combine_all = gr.Button("Combine All", label="Combine All Not Implemented")
+
+            merged_audio = gr.Audio(label="Merged Audio")
+
+            combine_all.click(fn=generate_thumbnail, inputs=[audio_gr, generated_video, img_result], outputs=[merged_audio])
 
 if __name__ == "__main__":
     demo.queue(concurrency_count=3, api_open=False).launch(server_port=8443, debug=True, share=True, server_name="0.0.0.0")            
+
 
