@@ -7,7 +7,7 @@ from fastapi import FastAPI
 B_INST, E_INST = "[INST]", "[/INST]"
 B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"
 class llm:
-    def __init__(self, model_location="/home/dlpc/llama-2-7b-chat-ct2", system_prompt="Return just only the answer while answering requests") -> None:
+    def __init__(self, model_location="llama-2-7b-chat-ct2", system_prompt="Return just only the answer while answering requests") -> None:
         print("Loading Generator")
         self.generator = ctranslate2.Generator(model_location, device="cuda")
 
