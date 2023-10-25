@@ -16,6 +16,7 @@ services:
       - 9000:9000
   
   ctllama2:
+    <<: *x-gpu
     build: ctllama2
     volumes:
       - ./ctllama2:/ctllama2 
