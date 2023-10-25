@@ -6,18 +6,19 @@ x-gpu: &x-gpu
           - driver: nvidia
             capabilities: ["gpu"]
 
-
 version: '3'
 services:
   gradio:
-    build: ./gradio/Dockerfile
+    build: gradio
+    volumes:
+      - ./gradio:/gradio
     ports:
       - 9000:9000
   
-  ctllama:
-    build: ./gradio/Dockerfile
+  ctllama2:
+    build: ctllama2
     volumes:
-      - ./ctllama:/ctllama2
+      - ./ctllama2:/ctllama2 
       
   coqui_tts:
     <<: *x-gpu
