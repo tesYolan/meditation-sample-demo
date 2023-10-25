@@ -1,0 +1,48 @@
+x-gpu: &x-gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            capabilities: ["gpu"]
+
+
+version: '3'
+services:
+  gradio:
+    build: ./gradio/Dockerfile
+    ports:
+      - 9000:9000
+  
+  ctllama:
+    build: ./gradio/Dockerfile
+    volumes:
+      - ./ctllama:/ctllama2
+      
+  coqui_tts:
+    <<: *x-gpu
+    image: ghcr.io/coqui-ai/tts
+    entrypoint: >
+      bash -c "python3 TTS/server/server.py --model_name tts_models/en/vctk/vits --use_cuda true"
+    ports:
+      - "5002:5002"
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - tts_models:/root/.local/share/tts
+
+  automatic: 
+    image: goolashe/automatic1111-sd-webui
+    environment:
+      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api --disable-safe-unpickle --no-half-vae --no-half
+      - CUDA_VISIBLE_DEVICES=0
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
+
+volumes:
+  tts_models:
