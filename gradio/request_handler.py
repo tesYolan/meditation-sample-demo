@@ -17,7 +17,7 @@ import io
 from pydub import AudioSegment
 
 affirmation_gen = "http://ctllama2:6888/affirmation_gen"
-client = Client("http://0.0.0.0:6889/")
+client = Client("http://musicgen:8000/")
 tts_api = "http://coqui_tts:5002/api/tts"
 txt_to_img = "http://automatic:7860/sdapi/v1/txt2img"
 

@@ -21,7 +21,7 @@ services:
     volumes:
       - ./musicgen:/musicgen
     ports:
-      -  "8000:8000"
+      -  "8000:7860"
   
   ctllama2:
     <<: *x-gpu
