@@ -14,6 +14,14 @@ services:
       - ./gradio:/gradio
     ports:
       - 9000:9000
+
+  musicgen:
+    <<: *x-gpu
+    build: musicgen
+    volumes:
+      - ./musicgen:/musicgen
+    ports:
+      -  "8000:8000"
   
   ctllama2:
     <<: *x-gpu
