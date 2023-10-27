@@ -1,0 +1,5 @@
+ctranslate2
+transformers
+xformers
+sentencepiece
+fastapi

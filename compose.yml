@@ -1,0 +1,68 @@
+x-gpu: &x-gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            capabilities: ["gpu"]
+
+version: '3'
+services:
+  gradio:
+    build: gradio
+    volumes:
+      - ./gradio:/gradio
+    ports:
+      - 9000:9000
+
+  musicgen:
+    <<: *x-gpu
+    build: musicgen
+    volumes:
+      - ./musicgen:/musicgen
+    ports:
+      -  "8000:7860"
+  
+  ctllama2: &x-ctllama2
+    <<: *x-gpu
+    build: ctllama2
+    volumes:
+      - ./ctllama2:/ctllama2 
+  
+  ctllama2-model:
+    <<: *x-ctllama2
+    profiles:
+      - download
+    volumes:
+      # pass huggingface token
+      - ./ctllama2:/ctllama2
+      - ~/.huggingface/token:/root/.huggingface/token
+    entrypoint: "ct2-transformers-converter --model meta-llama/Llama-2-7b-chat-hf --quantization float16 --output_dir llama-2-7b-chat-ct"
+      
+  coqui_tts:
+    <<: *x-gpu
+    image: ghcr.io/coqui-ai/tts
+    entrypoint: >
+      bash -c "python3 TTS/server/server.py --model_name tts_models/en/vctk/vits --use_cuda true"
+    ports:
+      - "5002:5002"
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - tts_models:/root/.local/share/tts
+
+  automatic: 
+    image: goolashe/automatic1111-sd-webui
+    environment:
+      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api --disable-safe-unpickle --no-half-vae --no-half
+      - CUDA_VISIBLE_DEVICES=0
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
+
+volumes:
+  tts_models:

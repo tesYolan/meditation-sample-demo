@@ -1,2 +1,0 @@
-export KMP_DUPLICATE_LIB_OK=TRUE
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ctranslate2/lib
