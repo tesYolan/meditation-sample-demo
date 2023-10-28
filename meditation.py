@@ -14,11 +14,21 @@ import gradio as gr
 import subprocess
 from request_handler import make_affirmation_request, make_audio_beat_request, make_tts_audio_request, make_txt_to_img_request, generate_thumbnail
 
-def generate_affirmation(text):
 
-    response = make_affirmation_request(text)
+def generate_affirmation(text, prompt_state):
 
-    return gr.Textbox(lines=1, label="Generated Text", value=response, interactive=True)
+    dialog = prompt_state.get("dialog", [])
+
+    system_prompt = """Return just only the answer while satisfying the user request. For example. Give me a short affirmation 
+    messagea about being a good person. The system returns - "I am a good person. I am good mannered." """
+    # if dialog is empty
+    if not dialog:
+        dialog.append({"role": "system", "content": system_prompt})
+    response, dialog = make_affirmation_request(text, dialog)
+    prompt_state["dialog"] = dialog
+
+    # this is the meditaiton one. so the dialog is empty. 
+    return gr.Textbox(lines=1, label="Generated Text", value=response, interactive=True), prompt_state, prompt_state
 
 def generate_melody(text):
 
@@ -52,11 +62,16 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
             generate = gr.Button("Create a Self Affirmation Message", label="Create Self Affirmation Message")
 
+            prompt_state = gr.State(value=dict())
+
+
             # generate_zh = gr.Button("Create a Self Affirmation Message- Chinese", label="Create Self Affirmation Message - Chinese")
 
-            text_gen = gr.Textbox(label="Generated Text", lines=1, placeholder="I am a good person. I am good mannered.", interactive=False)
+            with gr.Row():
+                text_gen = gr.Textbox(label="Generated Text", lines=1, placeholder="I am a good person. I am good mannered.", interactive=False)
+                table = gr.JSON()
             dropdown = gr.Dropdown(label="Speaker style", choices=["p336", "p339", "p326"])
-            generate.click(fn=generate_affirmation, inputs=[text], outputs=[text_gen])
+            generate.click(fn=generate_affirmation, inputs=[text, prompt_state], outputs=[text_gen, prompt_state, table])
 
             audio_gr = gr.Audio(label="Generated Audio", type="filepath")
             generate_tts = gr.Button("Generate TTS Audio", label="Generate TTS Audio")
@@ -86,6 +101,6 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
 
 if __name__ == "__main__":
     print("Starting Gradio Server")
-    demo.queue(concurrency_count=3, api_open=False).launch(server_port=9000, debug=True, share=True, server_name="0.0.0.0")            
+    demo.queue(concurrency_count=3, api_open=False).launch(server_port=9000, debug=True, server_name="0.0.0.0")            
 
 

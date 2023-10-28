@@ -17,9 +17,9 @@ import io
 from pydub import AudioSegment
 
 affirmation_gen = "http://0.0.0.0:6888/affirmation_gen"
-client = Client("http://0.0.0.0:6889/")
-tts_api = "http://0.0.0.0:5002/api/tts"
-txt_to_img = "http://0.0.0.0:7860/sdapi/v1/txt2img"
+client = Client("http://158.132.58.150:8000/")
+tts_api = "http://158.132.58.150:5002/api/tts"
+txt_to_img = "http://158.132.58.150:7860/sdapi/v1/txt2img"
 
 def resize_video(input_path, output_path, target_width, target_height):
     ffmpeg_cmd = [
@@ -63,7 +63,7 @@ def generate_thumbnail(audio_gr, generated_video, img_result):
     output_audio = base_audio.overlay(background_audio)
 
     output_file = generate_random_string(12) + ".wav"
-    output_audio.export(output_file, format="wav")
+    output_audio.export("wavs/"+output_file, format="wav")
 
     return output_file
 
@@ -71,26 +71,25 @@ def generate_random_string(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-def make_affirmation_request(prompt):
+def make_affirmation_request(prompt, dialog):
     # make prompt better
     
-    text = "Make a self affirmation message about " + prompt + "."
-    response = requests.post(affirmation_gen, json={"prompt": text})
+    response = requests.post(affirmation_gen, json={"prompt": prompt, "dialog":dialog})
 
     if response.status_code == 200:
-        return response.json()['response']
+        return response.json()['response'], response.json()['dialog']
     else:
         return "Error on the backend"
 
 def make_audio_beat_request(prompt):
     # make prompt better
 
-    result = client.predict("melody", prompt, "", 10, 250, 0, 1, 3, fn_index=1)
+    result = client.predict("facebook/musicgen-medium", "MultiBand_Diffusion", prompt, "", 4, 250, 0, 1, 3, fn_index=2)
 
     # this would result something like 
     # /private/var/folders/my/hg4vt5993352zz0kd4vhg16m0000gn/T/gradio/b9da0a6bb161d10f49ea619b3e5460453eaa6c97/TlkSCEN8wMCz.mp4
 
-    return result
+    return result[0]
 
 def make_waveform(*args, **kwargs):
     # Further remove some warnings.
@@ -125,7 +124,7 @@ def make_txt_to_img_request(prompt):
     data = {"prompt":prompt}
 
     response = requests.post(txt_to_img, json=data, headers=headers)
-    file_name = generate_random_string(12) + ".png"
+    file_name = "imgs/" + generate_random_string(12) + ".png"
     if response.status_code == 200:
         # save the image and return path
         image = Image.open(io.BytesIO(base64.b64decode(response.json()['images'][0])))

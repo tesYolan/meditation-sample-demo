@@ -12,34 +12,39 @@ class llm:
         self.generator = ctranslate2.Generator(model_location, device="cuda")
 
         self.context_length = 4096
+
         self.max_generation_length = 512
+        self.sampling_temperature = 0.6
+        self.sampling_topk = 20
+        self.sampling_topp = 1
+
         self.max_prompt_length = self.context_length - self.max_generation_length
+
+        self.system_prompt = True
+
 
         print("Loading Tokenizer")
         self.sp = spm.SentencePieceProcessor(os.path.join(model_location, "tokenizer.model"))
 
-        self.dialog = []
-
-        self.system_prompt = system_prompt
-        print("Finished loadin")
+        print("Finished loading")
 
     
     def append_system_prompt(self, prompt: str):
         "Append a system prompt to the dialog"
         self.dialog.append({"role": "system", "content": prompt})
 
-    def predict(self, prompt: str):
+    def predict(self, prompt: str, dialog: list):
         "Generate text give a prompt"
 
-        self.dialog.append({"role": "user", "content": prompt})
+        dialog.append({"role": "user", "content": prompt})
 
-        prompt_tokens = self.build_prompt(self.sp, self.dialog)
+        prompt_tokens = self.build_prompt(self.sp, dialog)
 
         if len(prompt_tokens) > self.max_prompt_length:
             if self.system_prompt:
-                self.dialog = [self.dialog[0]] + self.dialog[3:]
+                dialog = [dialog[0]] + dialog[3:]
             else:
-                self.dialog = self.dialog[2:]
+                dialog = dialog[2:]
         
         step_results = self.generator.generate_tokens(prompt_tokens, 
                                                       max_length=self.max_generation_length, 
@@ -52,8 +57,8 @@ class llm:
         for word in self.generate_words(self.sp, step_results):
             text_output += word + " "
         
-        self.dialog.append({"role": "assistant", "content": text_output})
-        return text_output
+        dialog.append({"role": "assistant", "content": text_output})
+        return text_output, dialog
 
     def generate_words(self, sp, step_results):
         tokens_buffer = []
@@ -125,10 +130,9 @@ llm_model = llm()
 async def predict(prompt: dict):
 
     # change from json to text
-    print(prompt)
-    response = llm_model.predict(prompt['prompt'])
+    response, dialog = llm_model.predict(prompt['prompt'], prompt['dialog'])
 
-    return {'response':response}
+    return {'response':response, 'dialog':dialog}
 
 if __name__ == '__main__':
     import uvicorn
