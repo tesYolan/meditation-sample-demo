@@ -45,25 +45,35 @@ def extract_audio(input_file, output_file):
 def generate_thumbnail(audio_gr, generated_video, img_result):
     # this one we would take the image and the audio and the video and combine them into one.
     # take the wav audio of the generated_video first
-    file_name = generate_random_string(12) + ".wav"
+    file_name = 'wavs/' + generate_random_string(12) + ".wav"
     extract_audio(generated_video, file_name)
 
     # now merge this audio and background audio. there is some package that does that. 
 
-    base_audio = AudioSegment.from_file(audio_gr) # this should be tts. 
+    base_audio = AudioSegment.from_file(audio_gr).set_frame_rate(32000) # this should be tts. 
     background_audio = AudioSegment.from_file(file_name) # extracted audio
 
-    while len(background_audio) < len(base_audio):
-        background_audio += background_audio
-    
-    background_audio = background_audio[:len(base_audio)]
+    print(len(base_audio))
+    print(base_audio.frame_rate)
+    print("first")
+    print(len(background_audio))
+    print(background_audio.frame_rate)
 
-    background_audio -= 10
+
+    background_audio = background_audio * (len(base_audio) // len(background_audio) + 1)
+    print("second")
+    print(len(background_audio))
+
+    # background_audio = background_audio[:len(base_audio)]
+    print("third")
+    print(len(background_audio))
+
+    background_audio -= 1
 
     output_audio = base_audio.overlay(background_audio)
 
-    output_file = generate_random_string(12) + ".wav"
-    output_audio.export("wavs/"+output_file, format="wav")
+    output_file = 'wavs/' + generate_random_string(12) + ".wav"
+    output_audio.export(output_file, format="wav")
 
     return output_file
 

@@ -29,9 +29,9 @@ class llm:
         print("Finished loading")
 
     
-    def append_system_prompt(self, prompt: str):
+    def append_system_prompt(self, prompt: str, dialog):
         "Append a system prompt to the dialog"
-        self.dialog.append({"role": "system", "content": prompt})
+        dialog.append({"role": "system", "content": prompt})
 
     def predict(self, prompt: str, dialog: list):
         "Generate text give a prompt"

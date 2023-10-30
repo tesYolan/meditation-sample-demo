@@ -73,7 +73,7 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             dropdown = gr.Dropdown(label="Speaker style", choices=["p336", "p339", "p326"])
             generate.click(fn=generate_affirmation, inputs=[text, prompt_state], outputs=[text_gen, prompt_state, table])
 
-            audio_gr = gr.Audio(label="Generated Audio", type="filepath")
+            audio_gr = gr.Audio(label="Generated Audio", type="filepath", interactive=False)
             generate_tts = gr.Button("Generate TTS Audio", label="Generate TTS Audio")
             generate_tts.click(fn=generate_tts_fn, inputs=[text_gen, dropdown], outputs=[audio_gr])
 
@@ -81,7 +81,7 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             # tts_style = gr.Dropdown(label="Audio style", choices=["Voice 1", "Voice 2"])
             
             text_audio_style = gr.Textbox(label="Background Music Style", lines=1, placeholder="lofi hip hop style")
-            generated_video = gr.Video(label="Generated Music")
+            generated_video = gr.Video(label="Generated Music", interactive=False)
             generate_audio = gr.Button("Generate Background Audio", label="Play Generated Audio")
 
             generate_audio.click(fn=generate_melody, inputs=[text_audio_style], outputs=[generated_video])
@@ -89,7 +89,7 @@ with gr.Blocks(theme="gradio/monochrome") as demo:
             image_generation = gr.Textbox(label="Image Generation", lines=1, placeholder="Serene image of a beach.")
             image_generation_button = gr.Button("Generate Image", label="Generate Image")
 
-            img_result = gr.Image()
+            img_result = gr.Image(interactive=False)
 
             image_generation_button.click(fn=txt_to_img, inputs=[image_generation], outputs=[img_result])
 
